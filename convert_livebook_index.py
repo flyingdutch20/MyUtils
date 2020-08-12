@@ -36,29 +36,20 @@ def main():
 
     text = open(args.filename).read().rstrip()
 
-#    out = text.replace(',', '.')
-
-
     bsObj = BeautifulSoup(text, features='html.parser')
-    table = bsObj.find("table")
-    rows = table.findAll("tr")
+    lines = bsObj.findAll("a")
 
     splitname = (args.filename).rsplit('.', 1)
-    csvFile = open(splitname[0] + '.csv', 'w', newline='')
-    writer = csv.writer(csvFile)
+    outfile = open(splitname[0] + '.txt', 'w', newline='')
 
+    out_lines = []
 
-    try:
-        for row in rows:
-            csvRow = []
-            for cell in row.findAll(["td", "th"]):
-#                content = cell.get_text()
-                content = bytes(cell.get_text(), "ANSI")
-                csvRow.append(content.decode("ANSI").replace(',', '.'))
-#                csvRow.append(content.replace(',', '.'))
-            writer.writerow(csvRow)
-    finally:
-        csvFile.close()
+    for line in lines:
+        chapter = line.get_text().strip()
+        if len(chapter) > 1:
+            out_lines.append(chapter + '\n')
+    outfile.writelines(out_lines)
+    outfile.close()
 
 
 # --------------------------------------------------
